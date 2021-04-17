@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:bubble/bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 // Run your app with 'flutter run --dart-define=OPENAI_KEY=YOUR_API_KEY_HERE
-const OPENAI_KEY = "";
+const OPENAI_KEY = String.fromEnvironment("OPENAI_KEY");
 
 void main() {
   runApp(MyApp());
@@ -22,12 +23,11 @@ class MyApp extends StatelessWidget {
 
       /// Our custom theme colors
       theme: ThemeData(
-        primaryColor: Colors.orange.shade300,
-        scaffoldBackgroundColor: Colors.grey.shade800,
+        primaryColor: Color(0xffFF002755),
+        scaffoldBackgroundColor: Colors.blue.shade800,
       ),
-
       /// The main page
-      home: MyHomePage(title: 'AIbus TUMbledore'),
+      home: MyHomePage(title: 'GP2GO'),
     );
   }
 }
@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       /// The top app bar with title
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title, style: TextStyle(color: Color(0x00FF82FF4D), fontWeight: FontWeight.bold, fontSize: 40)),
       ),
       body: Column(
         children: [
@@ -131,8 +131,8 @@ class _MyHomePageState extends State<MyHomePage> {
               reverse: true, // makes it 'stick' to the bottom when sending new messages
               children: messages.reversed.map((message) {
                 return Bubble(
-                  child: Text(message.text),
-                  color: message.byMe ? Colors.orange.shade300 : Colors.grey.shade300,
+                  child: Text(message.text, style: TextStyle(color: Colors.blue[900])), color: message.byMe ? Color(
+                    0xFF82FF4D) : Color(0xffFF13E2CC),
                   nip: message.byMe ? BubbleNip.rightBottom : BubbleNip.leftBottom,
                   alignment: message.byMe ? Alignment.topRight : Alignment.topLeft,
                   margin: BubbleEdges.symmetric(vertical: 5),
@@ -152,8 +152,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     style: TextStyle(color: Colors.white),
                     controller: textEditingController,
                     decoration: InputDecoration(
-                      hintText: "Message",
-                      hintStyle: TextStyle(color: Colors.white),
+                      hintText: "Deine Frage",
+                      hintStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
                     ),
                     onSubmitted: (text) {
                       sendMessage(text);
