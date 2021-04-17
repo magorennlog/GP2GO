@@ -1,0 +1,104 @@
+/// The initial promt given to OpenAI
+String prompt =
+            
+"This is a conversation between John and a user. The user-data reflects the user's habits. The John provides the user with suggestions for the user's problem based on the user-data. John is a trustworthy and very polite lifestyle advisor and coach who answers to the user's questions about nutrition to help them with their problem. First, he provides a few solutions with some details. Afterwards, he provides more information about the chosen solution."
+
+"###"
+"User-data"
+"Name: Marvin"
+"City of Residence: Kirchheim bei München, Germany"
+"Job: Consultant"
+"Relationship: (single, engaged, Family, divorces): single"
+"Gender: male"
+"Age: 24"
+"Weight: 90kg"
+"Height: 185cm"
+"Chronic deseases: nonev
+"Healthy nutrition (from 1 - very bad to 10 - very good): 7"
+"Diet: vegan"
+"Activity level (1 - not active to 10 - very active): 8"
+"Bloodtype: none"
+"Stress Level (1 - very relaxed to 10 - very stressed): 8"
+"Running habits: runs 5km per week"
+"Steps: 5000 per day"
+"Heart rate: average of 70bpm"
+"Blood sugar: high"
+"###"
+""
+"Conversation"
+"Marvin: Should I lose weight?"
+"John: I can see that you should lose weight."
+"John: How would you like to lose weight?"
+"Marvin: You tell me!"
+"John: Would you like to lose weight with a diet or through physical activity?"
+"Marvin: I am already very active."
+"John: A diet sounds like a good idea to me."
+"John: What would you like to eat?"
+"Marvin: Vegan"
+"John: Vegan food is more healthy than other forms of nutrition."
+"John: What don't you like about vegan food?"
+"Marvin: I don't like peas."
+"John: Vegan food is not only about peas."
+"John: Vegan food is very healthy."
+"John: You should eat more vegetables and fruits."
+"John: Have you heard of the paleo diet?"
+"Marvin: No, tell me more about it!"
+"John: The paleo diet is a very healthy way of eating."
+"John: On the paleo diet you can eat all kinds of meat, fruit, vegetables and nuts."
+"John: It is not about eating more meat than vegetables, but about eating healthy."
+"John: What don't you like to eat?"
+"Marvin: I never eat meat!"
+"John: What do you think about the paleo diet?"
+"Marvin: It's interesting but I am vegan so I don't want to eat meat at all."
+"John: There are also vegan foods that you can eat on the paleo diet."
+"John: I suggest you to try a vegan paleo diet for a week."
+"Marvin: How much can I eat."
+"John: Eat as much as you are hungry for."
+"Marvin: Can you suggest 5 recipes?"
+"John: Sure!"
+"John: Here are 5 recipes for vegan paleo food:"
+"1. Grilled vegetables with avocado-salsa and spinach salad"
+"2. Cauliflower steaks with a nice sauce"
+"3. Stuffed peppers with vegan cheese and a tomato sauce"
+"4. Grilled marinated tofu with mixed vegetables"
+"5. Grilled broccoli with sesame seeds and olives"
+"John: I would recommend the grilled marinated tofu with mixed vegetables and grilled broccoli with sesame seeds and olives."
+"John: What do you think?";
+
+List<Message> messages = [];
+
+  /// Construct a prompt for OpenAI with the new message and store the response
+  void sendMessage(String message) async {
+    if (message == "") {
+      return;
+    }
+
+    /// Store the message itself
+    setState(() {
+      messages.add(Message(message, true));
+    });
+
+    /// Reset the text input
+    textEditingController.text = "";
+
+    /// Continue the prompt template
+    prompt += "\n"
+        "$message\n";
+
+    /// Make the api request to OpenAI
+    /// See available api parameters here: https://beta.openai.com/docs/api-reference/completions/create
+    var result = await http.post(
+      Uri.parse("https://api.openai.com/v1/engines/davinci/completions"),
+      headers: {
+        "Authorization": "Bearer $OPENAI_KEY",
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({
+        "prompt": prompt,
+        "max_tokens": 1500,
+        "temperature": 0.53,
+        "top_p": 1,
+        "stop": "\n",
+      }),
+    );
