@@ -23,11 +23,11 @@ class MyApp extends StatelessWidget {
 
       /// Our custom theme colors
       theme: ThemeData(
-        primaryColor: Color(0xffFF002755),
-        scaffoldBackgroundColor: Colors.blue.shade800,
-      ),
+        primaryColor: Colors.white,
+        scaffoldBackgroundColor: Colors.white,
+      ), 
       /// The main page
-      home: MyHomePage(title: 'GP2GO'),
+      home: MyHomePage(title: 'small STEPS'),
     );
   }
 }
@@ -61,9 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String prompt =
       "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.\n"
       "Human: Hello, who are you?\n"
-      "AI: I am an AI created by OpenAI. How can I help you today?";
-
-  /// The history of chat messages sent
+      "AI: I am an AI created by OpenAI. How can I help you today?" ; /// The history of chat messages sent
   List<Message> messages = [];
 
   /// Construct a prompt for OpenAI with the new message and store the response
@@ -82,11 +80,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     /// Continue the prompt template
     prompt += "\n"
-        "Human: $message\n"
-        "AI:";
+        "$message\n";
 
     /// Make the api request to OpenAI
     /// See available api parameters here: https://beta.openai.com/docs/api-reference/completions/create
+    print("here is prompt"+prompt);
     var result = await http.post(
       Uri.parse("https://api.openai.com/v1/engines/davinci/completions"),
       headers: {
@@ -96,17 +94,18 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       body: jsonEncode({
         "prompt": prompt,
-        "max_tokens": 100,
-        "temperature": 0,
+        "max_tokens": 60,
+        "temperature": 0.53,
         "top_p": 1,
         "stop": "\n",
       }),
     );
 
     /// Decode the body and select the first choice
-    var body = jsonDecode(result.body);
-    var text = body["choices"][0]["text"];
-
+    var body2 = jsonDecode(result.body);
+    print(body2);
+    var text = body2["choices"][0]["text"];
+    print("here is response"+text);
     prompt += text;
 
     /// Store the response message
@@ -120,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       /// The top app bar with title
       appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: Color(0x00FF82FF4D), fontWeight: FontWeight.bold, fontSize: 40)),
+        title: Text(widget.title, style: TextStyle(fontFamily: 'Sensei', color: Colors.lightBlue[200], fontWeight: FontWeight.bold, fontSize: 40)),
       ),
       body: Column(
         children: [
@@ -131,8 +130,8 @@ class _MyHomePageState extends State<MyHomePage> {
               reverse: true, // makes it 'stick' to the bottom when sending new messages
               children: messages.reversed.map((message) {
                 return Bubble(
-                  child: Text(message.text, style: TextStyle(color: Colors.blue[900])), color: message.byMe ? Color(
-                    0xFF82FF4D) : Color(0xffFF13E2CC),
+                  child: Text(message.text, style: TextStyle(fontSize:18, color: Color(0xff33658a))), color: message.byMe ? Color(
+                    0xffbadefc) : Color(0xffFF9585),
                   nip: message.byMe ? BubbleNip.rightBottom : BubbleNip.leftBottom,
                   alignment: message.byMe ? Alignment.topRight : Alignment.topLeft,
                   margin: BubbleEdges.symmetric(vertical: 5),
@@ -143,17 +142,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
           /// The bottom text field
           Container(
-            color: Colors.grey.shade700,
+            color: Colors.lightGreen[200],
             padding: EdgeInsets.all(15),
             child: Row(
               children: [
                 Expanded(
                   child: TextField(
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(fontSize:24.0, color: Color(0xffffffff)),
                     controller: textEditingController,
                     decoration: InputDecoration(
                       hintText: "Deine Frage",
-                      hintStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                      hintStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
                     ),
                     onSubmitted: (text) {
                       sendMessage(text);
@@ -163,7 +162,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 IconButton(
                   icon: Icon(
                     Icons.send,
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    size: 34.0,
                   ),
                   onPressed: () {
                     sendMessage(textEditingController.text);
